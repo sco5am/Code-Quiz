@@ -31,7 +31,7 @@ body {
     background-color: #8570a5;
   }
   
-  .options button {
+  #choices button {
     display: block;
   }
   
