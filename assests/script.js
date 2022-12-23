@@ -4,7 +4,7 @@ let questionIndex = 0;
 let time = 100;
 let timerId;
 
-// here we get our html elements by their Ids to be used later on in the code 
+// here we get our html elements by their Ids to be used later on in the code
 let questionsEl = document.getElementById("questions");
 let optionsEl = document.getElementById("options");
 let startBtn = document.getElementById("start");
@@ -13,7 +13,7 @@ let endScreenEl = document.getElementById("end-screen");
 let finalScoreEl = document.getElementById("final-score");
 let timerEl = document.getElementById("time");
 let initialsEl = document.getElementById("initials");
-let submitBtn = document.getElementById('submit');
+let submitBtn = document.getElementById("submit");
 
 function tickClock() {
   //causes the time to decrease, also runs the results function if the time is equal to or less than 0
@@ -50,7 +50,6 @@ function askQuestion() {
   optionsEl.innerHTML = "";
   //this loops through avalible questions
   for (var i = 0; i < currentQuestion.multipleChoice.length; i++) {
-
     //creates buttons for each choice, so that the users selection can be registered
     let options = currentQuestion.multipleChoice[i];
     let optionNode = document.createElement("button");
@@ -72,7 +71,10 @@ function pickAnswer(event) {
   }
 
   // check if user guessed wrong or correct
-  if (buttonEl.value !== quizQuestions[questionIndex].correctAnswer) {
+  if (buttonEl.value === quizQuestions[questionIndex].correctAnswer) {
+    //if the user selects correctly, they will get the text Correct as feedback and not lose any time
+    feedbackEl.textContent = "Correct!";
+  } else {
     //if the user guessed wrong, they will get the text Wrong as feedback and be deducted 20 seconds
     feedbackEl.textContent = "Wrong!";
     time -= 20;
@@ -80,9 +82,6 @@ function pickAnswer(event) {
       time = 0;
     }
     timerEl.textContent = time;
-  } else {
-    //if the user selects correctly, they will get the text Correct as feedback and not lose any time
-    feedbackEl.textContent = 'Correct!';
   }
 
   // flash right/wrong feedback on page for 2 seconds
@@ -116,10 +115,10 @@ function saveScore() {
   let initials = initialsEl.value;
 
   // make sure value wasn't empty
-  if (initials !== '') {
+  if (initials !== "") {
     // this will get the highscores from the local storage, or return an empty array
     let highscores =
-      JSON.parse(window.localStorage.getItem('highscores')) || [];
+      JSON.parse(window.localStorage.getItem("highscores")) || [];
 
     // this will create a score object for the user
     let score = {
@@ -129,25 +128,25 @@ function saveScore() {
 
     // now we are seting the users score to local storage
     highscores.push(score);
-    window.localStorage.setItem('highscores', JSON.stringify(highscores));
+    window.localStorage.setItem("highscores", JSON.stringify(highscores));
 
     // this will redirect the user to the Highscores page
-    window.location.href = 'Highscore.html';
+    window.location.href = "Highscore.html";
   }
 }
 
 function checkForEnter(event) {
   // this will ensure that if the user presses enter, that it will register and run the saveScore function
-  if (event.key === 'Enter') {
+  if (event.key === "Enter") {
     saveScore();
   }
 }
 // Here we add Event listeners that check for a users click on each button, then rus the correct function
 startBtn.addEventListener("click", startQuiz);
 optionsEl.addEventListener("click", pickAnswer);
-submitBtn.addEventListener('click', saveScore);
+submitBtn.addEventListener("click", saveScore);
 // this checks for the checkForEnter function when a user releases the Enter key on the initials input
-initialsEl.onkeyup = checkForEnter
+initialsEl.onkeyup = checkForEnter;
 
 //this will create out object that contains all of our questions, options, and the correct answers
 let quizQuestions = [
@@ -194,6 +193,6 @@ let quizQuestions = [
       "parentheses",
       "< or > signs",
     ],
-    correctAnswer: "parenthese",
+    correctAnswer: "parentheses",
   },
 ];

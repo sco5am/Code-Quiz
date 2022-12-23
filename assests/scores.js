@@ -1,4 +1,4 @@
-function printHighscores() {
+function displayHighscores() {
     // this will either get our scores from the localstorage or set to empty array
     let highscores = JSON.parse(window.localStorage.getItem('highscores')) || [];
   
@@ -24,4 +24,4 @@ function printHighscores() {
   let clearEl = document.getElementById('clear');
   clearEl.addEventListener('click',clearHighscores )
   
-  printHighscores();
+  displayHighscores();
