@@ -100,25 +100,40 @@ function results() {
 }
 
 function saveScore() {
-  let initials = initialsEl.value;
-  if (!initials === "") {
-    let highscores =
-      JSON.parse(window.localStorage.getItem("highscores")) || [];
+  // get value of input box
+  var initials = initialsEl.value.trim();
 
-    let newScore = {
+  // make sure value wasn't empty
+  if (initials !== '') {
+    // get saved scores from localstorage, or if not any, set to empty array
+    var highscores =
+      JSON.parse(window.localStorage.getItem('highscores')) || [];
+
+    // format new score object for current user
+    var newScore = {
       score: time,
       initials: initials,
     };
-    highscores.push(newScore);
-    window.localStorage.setItem("highscores", JSON.stringify(highscores));
 
-    window.location.href = "highscores.html";
+    // save to localstorage
+    highscores.push(newScore);
+    window.localStorage.setItem('highscores', JSON.stringify(highscores));
+
+    // redirect to next page
+    window.location.href = 'Highscore.html';
   }
 }
 
+function checkForEnter(event) {
+  // "13" represents the enter key
+  if (event.key === 'Enter') {
+    saveScore();
+  }
+}
 startBtn.addEventListener("click", startQuiz);
 choicesEl.addEventListener("click", pickAnswer);
 submitBtn.addEventListener('click', saveScore);
+initialsEl.onkeyup = checkForEnter
 
 let quizQuestions = [
   {
