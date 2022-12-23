@@ -1,33 +1,51 @@
-var questionIndex = 0;
-var totalAnswer = 5;
+let questionIndex = 0;
+let time = 100;
+let timerId;
 
-var questionsEl = document.getElementById("questions");
-var choicesEl = document.getElementById("choices");
-var startBtn = document.getElementById("start");
-var feedbackEl = document.getElementById("feedback");
+let questionsEl = document.getElementById("questions");
+let choicesEl = document.getElementById("choices");
+let startBtn = document.getElementById("start");
+let feedbackEl = document.getElementById("feedback");
+let endScreenEl = document.getElementById("end-screen");
+let finalScoreEl = document.getElementById("final-score");
+let timerEl = document.getElementById("time");
+let initialsEl = document.getElementById("initials");
+let submitBtn = document.getElementById('submit');
+
+function tickClock() {
+  time--;
+  timerEl.textContent = time;
+  if (time <= 0) {
+    results();
+  }
+}
 
 function startQuiz() {
   // after pushing button it hides the start screen
-  var startScreenEl = document.getElementById("start-screen");
+  let startScreenEl = document.getElementById("start-screen");
   startScreenEl.setAttribute("class", "hide");
 
   questionsEl.removeAttribute("class");
+
+  timerId = setInterval(tickClock, 1000);
+
+  timerEl.textContent = time;
 
   //   after the start screen is hidden it calls the questions function to load
   askQuestion();
 }
 
 function askQuestion() {
-  var currentQuestion = quizQuestions[questionIndex];
+  let currentQuestion = quizQuestions[questionIndex];
 
-  var titleEl = document.getElementById("question-title");
+  let titleEl = document.getElementById("question-title");
   titleEl.textContent = currentQuestion.question;
 
   choicesEl.innerHTML = "";
-//loop through avalible questions
+  //loop through avalible questions
   for (var i = 0; i < currentQuestion.multipleChoice.length; i++) {
-    var choice = currentQuestion.multipleChoice[i];
-    var choiceNode = document.createElement("button");
+    let choice = currentQuestion.multipleChoice[i];
+    let choiceNode = document.createElement("button");
     choiceNode.setAttribute("class", "choice");
     choiceNode.setAttribute("value", choice);
 
@@ -38,7 +56,7 @@ function askQuestion() {
 }
 
 function pickAnswer(event) {
-  var buttonEl = event.target;
+  let buttonEl = event.target;
 
   // if the clicked element is not a choice button, do nothing.
   if (!buttonEl.matches(".choice")) {
@@ -48,7 +66,11 @@ function pickAnswer(event) {
   // check if user guessed wrong or correct
   if (buttonEl.value !== quizQuestions[questionIndex].correctAnswer) {
     feedbackEl.textContent = "Wrong!";
-    totalAnswer--;
+    time -= 20;
+    if (time < 0) {
+      time = 0;
+    }
+    timerEl.textContent = time;
   } else {
     feedbackEl.textContent = "Correct!";
   }
@@ -57,77 +79,91 @@ function pickAnswer(event) {
   feedbackEl.setAttribute("class", "feedback text-center");
   setTimeout(function () {
     feedbackEl.setAttribute("class", "feedback hide");
-  }, 1000);
+  }, 2000);
 
   // move to next question
   questionIndex++;
 
   // check if we've run out of questions
-  if (questionIndex === quizQuestions.length) {
+  if (questionIndex === quizQuestions.length || time < -0) {
     results();
   } else {
     askQuestion();
   }
 }
 
+function results() {
+  endScreenEl.removeAttribute("class");
+  finalScoreEl.textContent = time;
+  questionsEl.setAttribute("class", "hide");
+  clearInterval(timerId);
+}
 
+function saveScore() {
+  let initials = initialsEl.value;
+  if (!initials === "") {
+    let highscores =
+      JSON.parse(window.localStorage.getItem("highscores")) || [];
 
+    let newScore = {
+      score: time,
+      initials: initials,
+    };
+    highscores.push(newScore);
+    window.localStorage.setItem("highscores", JSON.stringify(highscores));
+
+    window.location.href = "highscores.html";
+  }
+}
 
 startBtn.addEventListener("click", startQuiz);
 choicesEl.addEventListener("click", pickAnswer);
+submitBtn.addEventListener('click', saveScore);
 
-var quizQuestions = [
+let quizQuestions = [
   {
-      question: 'Which of the following is NOT an event?',
-      multipleChoice: [
-          'Keydown',
-          'Change',
-          'Click',
-          'Function',
-      ],
-      correctAnswer: "Function",
+    question: "Which of the following is NOT an event?",
+    multipleChoice: ["Keydown", "Change", "Click", "Function"],
+    correctAnswer: "Function",
   },
-   {
-      question: 'what Does API stand for?',
-      multipleChoice: [
-          'Application Programming Interface',
-          'Always Plug Information',
-          'Application Pre-intrigration',
-          'Anytime Programming Instruction',
-      ],
-      correctAnswer: "Application Programming Interface",
-   },  
-  
-   {
-      question: 'Commonly used data types include:',
-      multipleChoice: [
-          'Numbers',
-          'Booleans',
-          'Strings',
-          'All of the above',
-      ],
-      correctAnswer: 'All of the above',
-   },  
-  
-   {
-      question: 'String values must be enclosed within ____ when being assigned to variables.',
-      multipleChoice: [
-          '< or > signs',
-          'quotes',
-          'square brackets',
-          'parentheses',
-      ],
-      correctAnswer: 'quotes'
-   },  
-  
-   {
-      question: 'The condition in an if / else statement is enclosed within ____.',
-      multipleChoice: [
-          'square brackets',
-          'quotes',
-          'parentheses',
-          '< or > signs',
-      ],
-      correctAnswer: 'parenthese',
-   },  
-  ]
+  {
+    question: "what Does API stand for?",
+    multipleChoice: [
+      "Application Programming Interface",
+      "Always Plug Information",
+      "Application Pre-intrigration",
+      "Anytime Programming Instruction",
+    ],
+    correctAnswer: "Application Programming Interface",
+  },
+
+  {
+    question: "Commonly used data types include:",
+    multipleChoice: ["Numbers", "Booleans", "Strings", "All of the above"],
+    correctAnswer: "All of the above",
+  },
+
+  {
+    question:
+      "String values must be enclosed within ____ when being assigned to variables.",
+    multipleChoice: [
+      "< or > signs",
+      "quotes",
+      "square brackets",
+      "parentheses",
+    ],
+    correctAnswer: "quotes",
+  },
+
+  {
+    question:
+      "The condition in an if / else statement is enclosed within ____.",
+    multipleChoice: [
+      "square brackets",
+      "quotes",
+      "parentheses",
+      "< or > signs",
+    ],
+    correctAnswer: "parenthese",
+  },
+];
